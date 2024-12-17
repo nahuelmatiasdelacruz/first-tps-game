@@ -5,10 +5,17 @@ using UnityEngine;
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager SharedInstance;
+    
     [Tooltip("Current game score")]
+    [SerializeField]
+    private int amount;
 
-    public int amount;
-
+    public int Amount
+    {
+        get => amount;
+        set => amount = value;
+    }
+    
     void Awake()
     {
         if (SharedInstance == null)
