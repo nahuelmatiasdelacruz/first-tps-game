@@ -7,16 +7,29 @@ public class GameMode : MonoBehaviour
 {
     [SerializeField]
     private Life playerLife;
-    void Update()
+
+    [SerializeField]
+    private Life baseLife;
+    
+    void Awake()
     {
-        if (EnemyManager.SharedInstance.enemies.Count <= 0 && WaveManager.SharedInstance.waves.Count <= 0)
+        playerLife.onDeath.AddListener(CheckLoseCondition);
+        baseLife.onDeath.AddListener(CheckLoseCondition);
+        
+        EnemyManager.SharedInstance.onEnemyAmountChange.AddListener(CheckWinCondition);
+        WaveManager.SharedInstance.onWaveChange.AddListener(CheckWinCondition);
+    }
+
+    void CheckLoseCondition()
+    {
+        SceneManager.LoadScene("LoseScene", LoadSceneMode.Single);
+    }
+
+    void CheckWinCondition()
+    {
+        if (EnemyManager.SharedInstance.EnemyCount<= 0 && WaveManager.SharedInstance.WaveCount <= 0)
         {
             SceneManager.LoadScene("WinScene",LoadSceneMode.Single);
-        }
-
-        if (playerLife.Amount <= 0)
-        {
-            SceneManager.LoadScene("LoseScene", LoadSceneMode.Single);
         }
     }
 }
