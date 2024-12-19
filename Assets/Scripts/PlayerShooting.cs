@@ -6,7 +6,8 @@ public class PlayerShooting : MonoBehaviour
     public GameObject shootingPoint;
     public AudioSource shootSound;
     private Animator _animator;
-
+    public int bulletsCount;
+    
     void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -17,7 +18,10 @@ public class PlayerShooting : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            Fire();
+            if (bulletsCount > 0)
+            {
+                Fire();
+            }
         }
     }
 
@@ -30,5 +34,6 @@ public class PlayerShooting : MonoBehaviour
         bullet.transform.rotation = shootingPoint.transform.rotation;
         bullet.SetActive(true);
         shootSound.Play();
+        bulletsCount--;
     }
 }

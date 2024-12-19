@@ -2401,6 +2401,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d668cd8d90875ef4bb7f4979879bf869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1217112647 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3372152329721200010, guid: ff249e1377bdb3249bb82136f82b34dd,
+    type: 3}
+  m_PrefabInstance: {fileID: 3962422608089035737}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 243045287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00823403c1c84a246ac659c157182973, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1231563850
 GameObject:
   m_ObjectHideFlags: 0
@@ -3877,6 +3889,7 @@ GameObject:
   - component: {fileID: 2114745639}
   - component: {fileID: 2114745641}
   - component: {fileID: 2114745640}
+  - component: {fileID: 2114745642}
   m_Layer: 5
   m_Name: ScoreBullets
   m_TagString: Untagged
@@ -4001,6 +4014,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2114745638}
   m_CullTransparentMesh: 1
+--- !u!114 &2114745642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114745638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f75e397ed80ba15408955f836ff715ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetShooting: {fileID: 1217112647}
 --- !u!1001 &3962422608089035737
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4013,6 +4039,11 @@ PrefabInstance:
         type: 3}
       propertyPath: amountToPool
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3372152329721200010, guid: ff249e1377bdb3249bb82136f82b34dd,
+        type: 3}
+      propertyPath: bulletsCount
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3468639490001123597, guid: ff249e1377bdb3249bb82136f82b34dd,
         type: 3}
