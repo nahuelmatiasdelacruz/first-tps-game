@@ -237,6 +237,7 @@ GameObject:
   - component: {fileID: 107762685}
   - component: {fileID: 107762687}
   - component: {fileID: 107762686}
+  - component: {fileID: 107762688}
   m_Layer: 5
   m_Name: LifeBar
   m_TagString: Untagged
@@ -302,6 +303,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 107762684}
   m_CullTransparentMesh: 1
+--- !u!114 &107762688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107762684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dcdd0cae2daf3e4fa8b1ef72cae9043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLife: {fileID: 316218037}
 --- !u!1 &130338192
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,7 +663,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d668cd8d90875ef4bb7f4979879bf869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amount: 50
+  maxLife: 1000
   onDeath:
     m_PersistentCalls:
       m_Calls: []
@@ -2474,6 +2488,7 @@ GameObject:
   - component: {fileID: 1287123130}
   - component: {fileID: 1287123132}
   - component: {fileID: 1287123131}
+  - component: {fileID: 1287123133}
   m_Layer: 5
   m_Name: LifeBar
   m_TagString: Untagged
@@ -2539,6 +2554,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1287123129}
   m_CullTransparentMesh: 1
+--- !u!114 &1287123133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287123129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dcdd0cae2daf3e4fa8b1ef72cae9043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetLife: {fileID: 1217112646}
 --- !u!1 &1376911821
 GameObject:
   m_ObjectHideFlags: 0
@@ -4054,6 +4082,11 @@ PrefabInstance:
     - target: {fileID: 9010790381371910476, guid: ff249e1377bdb3249bb82136f82b34dd,
         type: 3}
       propertyPath: amount
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 9010790381371910476, guid: ff249e1377bdb3249bb82136f82b34dd,
+        type: 3}
+      propertyPath: maxLife
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 9010790381371910476, guid: ff249e1377bdb3249bb82136f82b34dd,
