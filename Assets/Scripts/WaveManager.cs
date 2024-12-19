@@ -10,11 +10,18 @@ public class WaveManager : MonoBehaviour
 
     private List<WaveSpawner> _waves;
 
+    private int _totalWaves;
+    
     public UnityEvent onWaveChange;
     
     public int WaveCount
     {
         get => _waves.Count;
+    }
+
+    public int TotalWaves
+    {
+        get => _totalWaves;
     }
     
     void Awake()
@@ -33,6 +40,7 @@ public class WaveManager : MonoBehaviour
 
     public void AddWave(WaveSpawner wave)
     {
+        _totalWaves++;
         _waves.Add(wave);
         onWaveChange.Invoke();
     }

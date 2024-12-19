@@ -11,7 +11,7 @@ public class GameMode : MonoBehaviour
     [SerializeField]
     private Life baseLife;
     
-    void Awake()
+    void Start()
     {
         playerLife.onDeath.AddListener(CheckLoseCondition);
         baseLife.onDeath.AddListener(CheckLoseCondition);
