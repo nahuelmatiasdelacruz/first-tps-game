@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class WaveSpawner : MonoBehaviour
 {
+    
     [Tooltip("Enemy prefab to spawn")]
     public GameObject prefab;
 
