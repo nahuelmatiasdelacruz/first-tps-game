@@ -26,7 +26,7 @@ public class Enemy : MonoBehaviour
         
         Invoke("PlayDestruction",1);
         
-        Destroy(gameObject,2);
+        Destroy(gameObject,1);
 
         EnemyManager.SharedInstance.RemoveEnemy(this);
         ScoreManager.SharedInstance.Amount += pointsAmount;
