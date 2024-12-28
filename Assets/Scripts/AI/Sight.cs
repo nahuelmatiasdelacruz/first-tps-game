@@ -26,19 +26,30 @@ public class Sight : MonoBehaviour
 
             if (angleToCollider < angle)
             {
-                if (!Physics.Linecast(transform.position, collider.bounds.center, obstacleLayers))
+                if (!Physics.Linecast(transform.position, collider.bounds.center, out RaycastHit hit, obstacleLayers))
                 {
+                    Debug.DrawLine(transform.position, collider.bounds.center,Color.green);
                     // Se guarda la referencia del objetivo detectado
                     detectedTarget = collider;
                     break;
+                }
+                else
+                {
+                    Debug.DrawLine(transform.position, hit.point, Color.red);
                 }
             }
         }
     }
 
-    void OnDrawGizmosSelected()
+    void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(transform.position, distance);
+        Gizmos.DrawWireSphere(transform.position, distance);
+
+        Vector3 rightDirection = Quaternion.Euler(0 ,angle, 0) * transform.forward;
+        Gizmos.DrawRay(transform.position, rightDirection * distance);
+        
+        Vector3 leftDirection = Quaternion.Euler(0, -angle, 0) * transform.forward;
+        Gizmos.DrawRay(transform.position, leftDirection * distance);
     }
 }
