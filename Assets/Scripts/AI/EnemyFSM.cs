@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(Sight))]
 public class EnemyFSM : MonoBehaviour
@@ -16,15 +17,19 @@ public class EnemyFSM : MonoBehaviour
 
     public EnemyState currentState;
 
-    public Transform baseTransform;
+    private Transform baseTransform;
 
-    public float baseAttackDistance;
+    public float baseAttackDistance = 4, playerAttackDistance = 5;
 
     private Sight _sight;
+
+    private NavMeshAgent _agent;
 
     private void Awake()
     {
         _sight = GetComponent<Sight>();
+        baseTransform = GameObject.Find("Base").transform;
+        _agent = GetComponentInParent<NavMeshAgent>();
     }
 
     void Update()
@@ -50,6 +55,8 @@ public class EnemyFSM : MonoBehaviour
 
     void GoToBase()
     {
+        _agent.isStopped = false;
+        _agent.SetDestination(baseTransform.position);
         if(_sight.detectedTarget != null)
         {
             currentState = EnemyState.ChasePlayer;
@@ -63,17 +70,46 @@ public class EnemyFSM : MonoBehaviour
 
     void AttackBase()
     {
-        print("Attack base");
+        _agent.isStopped = true;
     }
 
     void ChasePlayer()
     {
-        print("Chase player");
+        if (_sight.detectedTarget == null)
+        {
+            currentState = EnemyState.GoToBase;
+            return;
+        }
+        _agent.isStopped = false;
+        _agent.SetDestination(_sight.detectedTarget.transform.position);
+        float distanceToPlayer = Vector3.Distance(transform.position, _sight.detectedTarget.transform.position);
+        if(distanceToPlayer < playerAttackDistance)
+        {
+            currentState = EnemyState.AttackPlayer;
+        }
     }
 
     void AttackPlayer()
     {
-        print("Attack player");
-    }
+        if (_sight.detectedTarget == null)
+        {
+            currentState = EnemyState.GoToBase;
+            return;
+        }
+        _agent.isStopped = true;
 
+        float distanceToPlayer = Vector3.Distance(transform.position, _sight.detectedTarget.transform.position);
+        if(distanceToPlayer > (playerAttackDistance * 1.2f))
+        {
+            currentState = EnemyState.ChasePlayer;
+        }
+    }
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, playerAttackDistance);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, baseAttackDistance);
+    }
 }
