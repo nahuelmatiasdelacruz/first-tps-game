@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Recognition Error Auto-Clear Test</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .error-message {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success-message {
+            background-color: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .timer {
+            font-family: monospace;
+            font-size: 18px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Speech Recognition Error Auto-Clear Test</h1>
+        
+        <div class="test-section">
+            <h2>Error Message Display</h2>
+            <div v-if="microphoneError" class="error-message">
+                {{ microphoneError }}
+                <div class="timer">Will auto-clear in: {{ timeRemaining }}s</div>
+            </div>
+            <div v-else class="success-message">
+                No error message currently displayed
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test Auto-Clear Functionality</h2>
+            <p>Click the buttons below to test different error scenarios. Each error should automatically disappear after 3 seconds.</p>
+            
+            <button @click="testPermissionError">Test Permission Error</button>
+            <button @click="testDeviceError">Test Device Not Found Error</button>
+            <button @click="testNoSpeechError">Test No Speech Detected Error</button>
+            <button @click="testRecognitionError">Test Recognition Timeout Error</button>
+            <button @click="clearError">Manual Clear Error</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Input Element</h2>
+            <input 
+                id="text-input-elem" 
+                type="text" 
+                placeholder="Speech recognition will fill this input..."
+                style="width: 100%; padding: 10px; font-size: 16px;"
+            />
+            <p>Input has text: {{ hasText }}</p>
+        </div>
+    </div>
+
+    <script>
+        // Simple vanilla JS implementation to test the auto-clear functionality
+        
+        // Mock useSpeechRecognition
+        function useSpeechRecognition(options) {
+            return {
+                isListening: ref(false),
+                result: ref(''),
+                start: () => {},
+                stop: () => {},
+                isSupported: ref(true)
+            };
+        }
+
+        // Import our composable (simplified version for demo)
+        function useSpeechInput(options = {}) {
+            const {
+                inputId = 'text-input-elem',
+                lang = 'en-US',
+                continuous = true,
+                interimResults = true,
+                onTextChange = null,
+                autoStopTimeout = 1500,
+            } = options;
+
+            const hasText = ref(false);
+            const microphoneError = ref(null);
+            const autoStopTimer = ref(null);
+            const maxListeningTimer = ref(null);
+            const microphoneErrorTimer = ref(null); // Timer for auto-clearing error messages
+            const clickOutsideHandler = ref(null);
+            const resultProcessed = ref(false);
+            const shouldTriggerSearch = ref(false);
+            const successfulResult = ref(false);
+
+            const { 
+                isListening, 
+                result, 
+                start, 
+                stop, 
+                isSupported 
+            } = useSpeechRecognition({
+                continuous,
+                interimResults,
+                lang,
+            });
+
+            /**
+             * Sets an error message and automatically clears it after 3 seconds
+             * @param {string} errorMessage - The error message to display
+             */
+            const setMicrophoneError = (errorMessage) => {
+                // Clear any existing error timer
+                clearMicrophoneErrorTimer();
+                
+                // Set the error message
+                microphoneError.value = errorMessage;
+                
+                // Set timer to clear the error after 3 seconds
+                microphoneErrorTimer.value = setTimeout(() => {
+                    microphoneError.value = null;
+                    microphoneErrorTimer.value = null;
+                }, 3000);
+            };
+
+            /**
+             * Clears the microphone error timer
+             */
+            const clearMicrophoneErrorTimer = () => {
+                if (microphoneErrorTimer.value) {
+                    clearTimeout(microphoneErrorTimer.value);
+                    microphoneErrorTimer.value = null;
+                }
+            };
+
+            /**
+             * Clears microphone error message
+             */
+            const clearMicrophoneError = () => {
+                microphoneError.value = null;
+                clearMicrophoneErrorTimer();
+            };
+
+            /**
+             * Updates hasText state based on input
+             */
+            const updateTextState = () => {
+                const inputEl = document.getElementById(inputId);
+                if (inputEl) {
+                    hasText.value = inputEl.value.length > 0;
+                }
+            };
+
+            return {
+                isListening,
+                hasText,
+                isSpeechSupported: isSupported,
+                speechResult: result,
+                microphoneError,
+                shouldTriggerSearch,
+                setMicrophoneError,
+                clearMicrophoneError,
+                clearMicrophoneErrorTimer,
+                updateTextState
+            };
+        }
+
+        createApp({
+            setup() {
+                const { 
+                    microphoneError, 
+                    hasText,
+                    setMicrophoneError,
+                    clearMicrophoneError,
+                    updateTextState
+                } = useSpeechInput();
+
+                const timeRemaining = ref(0);
+                let countdownTimer = null;
+
+                // Start countdown when error appears
+                watch(microphoneError, (newError) => {
+                    if (newError) {
+                        timeRemaining.value = 3;
+                        countdownTimer = setInterval(() => {
+                            timeRemaining.value--;
+                            if (timeRemaining.value <= 0) {
+                                clearInterval(countdownTimer);
+                            }
+                        }, 1000);
+                    } else {
+                        if (countdownTimer) {
+                            clearInterval(countdownTimer);
+                        }
+                        timeRemaining.value = 0;
+                    }
+                });
+
+                // Test functions
+                const testPermissionError = () => {
+                    setMicrophoneError('Access to the microphone was denied. Please check your browser settings.');
+                };
+
+                const testDeviceError = () => {
+                    setMicrophoneError('No microphone was detected. Please connect one and try again.');
+                };
+
+                const testNoSpeechError = () => {
+                    setMicrophoneError('No speech detected. Please try again.');
+                };
+
+                const testRecognitionError = () => {
+                    setMicrophoneError("We couldn't recognize your voice input. Please try again.");
+                };
+
+                const clearError = () => {
+                    clearMicrophoneError();
+                };
+
+                // Monitor input changes
+                nextTick(() => {
+                    const inputEl = document.getElementById('text-input-elem');
+                    if (inputEl) {
+                        inputEl.addEventListener('input', updateTextState);
+                        updateTextState();
+                    }
+                });
+
+                return {
+                    microphoneError,
+                    hasText,
+                    timeRemaining,
+                    testPermissionError,
+                    testDeviceError,
+                    testNoSpeechError,
+                    testRecognitionError,
+                    clearError
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

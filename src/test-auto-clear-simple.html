@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Recognition Error Auto-Clear Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .error-message {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        .success-message {
+            background-color: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .timer {
+            font-family: monospace;
+            font-size: 18px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Speech Recognition Error Auto-Clear Test</h1>
+        
+        <div class="test-section">
+            <h2>Error Message Display</h2>
+            <div class="error-message" id="error-display">
+                <div id="error-text"></div>
+                <div class="timer" id="timer-display"></div>
+            </div>
+            <div class="success-message" id="success-display">
+                No error message currently displayed
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test Auto-Clear Functionality</h2>
+            <p>Click the buttons below to test different error scenarios. Each error should automatically disappear after 3 seconds.</p>
+            
+            <button onclick="testPermissionError()">Test Permission Error</button>
+            <button onclick="testDeviceError()">Test Device Not Found Error</button>
+            <button onclick="testNoSpeechError()">Test No Speech Detected Error</button>
+            <button onclick="testRecognitionError()">Test Recognition Timeout Error</button>
+            <button onclick="clearError()">Manual Clear Error</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Input Element</h2>
+            <input 
+                id="text-input-elem" 
+                type="text" 
+                placeholder="Speech recognition will fill this input..."
+                style="width: 100%; padding: 10px; font-size: 16px;"
+            />
+            <p>Input has text: <span id="has-text-display">false</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Simple vanilla JS implementation to test the auto-clear functionality
+        let currentError = null;
+        let errorTimer = null;
+        let countdownTimer = null;
+        let timeRemaining = 0;
+
+        function updateDisplay() {
+            const errorDiv = document.getElementById('error-display');
+            const successDiv = document.getElementById('success-display');
+            const errorText = document.getElementById('error-text');
+            const timerDisplay = document.getElementById('timer-display');
+            
+            if (currentError) {
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                errorText.textContent = currentError;
+                timerDisplay.textContent = `Will auto-clear in: ${timeRemaining}s`;
+            } else {
+                errorDiv.style.display = 'none';
+                successDiv.style.display = 'block';
+            }
+        }
+
+        function setMicrophoneError(errorMessage) {
+            // Clear any existing timer
+            if (errorTimer) {
+                clearTimeout(errorTimer);
+            }
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+            }
+
+            // Set the error
+            currentError = errorMessage;
+            timeRemaining = 3;
+            updateDisplay();
+
+            // Start countdown
+            countdownTimer = setInterval(() => {
+                timeRemaining--;
+                updateDisplay();
+                if (timeRemaining <= 0) {
+                    clearInterval(countdownTimer);
+                }
+            }, 1000);
+
+            // Set auto-clear timer
+            errorTimer = setTimeout(() => {
+                currentError = null;
+                if (countdownTimer) {
+                    clearInterval(countdownTimer);
+                }
+                updateDisplay();
+            }, 3000);
+        }
+
+        function clearMicrophoneError() {
+            if (errorTimer) {
+                clearTimeout(errorTimer);
+            }
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+            }
+            currentError = null;
+            timeRemaining = 0;
+            updateDisplay();
+        }
+
+        // Test functions
+        function testPermissionError() {
+            setMicrophoneError('Access to the microphone was denied. Please check your browser settings.');
+        }
+
+        function testDeviceError() {
+            setMicrophoneError('No microphone was detected. Please connect one and try again.');
+        }
+
+        function testNoSpeechError() {
+            setMicrophoneError('No speech detected. Please try again.');
+        }
+
+        function testRecognitionError() {
+            setMicrophoneError("We couldn't recognize your voice input. Please try again.");
+        }
+
+        function clearError() {
+            clearMicrophoneError();
+        }
+
+        function updateTextState() {
+            const inputEl = document.getElementById('text-input-elem');
+            const hasTextDisplay = document.getElementById('has-text-display');
+            if (inputEl && hasTextDisplay) {
+                hasTextDisplay.textContent = inputEl.value.length > 0 ? 'true' : 'false';
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDisplay();
+            
+            // Monitor input changes
+            const inputEl = document.getElementById('text-input-elem');
+            if (inputEl) {
+                inputEl.addEventListener('input', updateTextState);
+                updateTextState();
+            }
+        });
+    </script>
+</body>
+</html>
